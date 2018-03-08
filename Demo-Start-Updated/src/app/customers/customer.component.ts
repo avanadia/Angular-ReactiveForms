@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FormGroup, FormBuilder, Validators, AbstractControl, ValidatorFn } from '@angular/forms';
+import { FormGroup, FormBuilder, Validators, AbstractControl, ValidatorFn, FormArray } from '@angular/forms';
 
 import 'rxjs/add/operator/debounceTime';
 
@@ -35,6 +35,10 @@ export class CustomerComponent implements OnInit {
     emailMessage: string;
     confirmEmailMessage: string;
 
+    get addresses(): FormArray {
+        return <FormArray>this.customerForm.get('addresses');
+    }
+
     private validationMessages = {
         required: 'Please enter your email address.',
         pattern: 'Please enter a valid email address.'
@@ -53,14 +57,15 @@ export class CustomerComponent implements OnInit {
         this.customerForm = this.fb.group({
             firstName: ['', [Validators.required, Validators.minLength(3)]],
             lastName: ['', [Validators.required, Validators.maxLength(50)]],            
-            sendCatalog: false,
+            sendCatalog: true,
             phone: '',
             notification: 'email',
             rating: ['', ratingRange(1,5)],            
             emailGroup: this.fb.group({
                 email: ['', [Validators.required, Validators.pattern('[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+')]],
                 confirmEmail: ['', Validators.required],
-            }, {validator: emailMatcher})
+            }, {validator: emailMatcher}),
+            addresses: this.fb.array([ this.buildAddresses() ])
         }); 
 
         this.customerForm.get('notification').valueChanges.subscribe(value => this.setNotification(value));
@@ -70,6 +75,21 @@ export class CustomerComponent implements OnInit {
 
         const confirmEmailControl = this.customerForm.get('emailGroup.confirmEmail');
         confirmEmailControl.valueChanges.debounceTime(3000).subscribe(value => this.setMessage(confirmEmailControl));
+    }
+
+    addAddress(): void {
+        this.addresses.push(this.buildAddresses());
+    }
+ 
+    buildAddresses(): FormGroup {
+        return this.fb.group({
+                addressType: 'Home',
+                streetAddress1: ['', Validators.required],
+                streetAddress2: '',
+                city: ['', Validators.required],
+                state: ['', Validators.required],
+                zip: ['', Validators.required]
+            });
     }
 
     setConfirmMessage(c: AbstractControl): void {
