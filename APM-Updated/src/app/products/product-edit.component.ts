@@ -153,6 +153,7 @@ export class ProductEditComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     saveProduct(): void {
+        // only save if form has been changed and is valid
         if (this.productForm.dirty && this.productForm.valid) {
             // Copy the form values over the product object values
             let p = Object.assign({}, this.product, this.productForm.value);
@@ -168,7 +169,7 @@ export class ProductEditComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     onSaveComplete(): void {
-        // Reset the form to clear the flags
+        // Reset the form to clear the flags, otherwise the route guard will alert us
         this.productForm.reset();
         this.router.navigate(['/products']);
     }

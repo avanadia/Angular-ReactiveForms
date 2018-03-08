@@ -25,7 +25,8 @@ export class ProductService {
 
     getProduct(id: number): Observable<IProduct> {
         if (id === 0) {
-        return Observable.of(this.initializeProduct());
+            // below syntax is shortcut for the commented out code below
+            return Observable.of(this.initializeProduct());
         // return Observable.create((observer: any) => {
         //     observer.next(this.initializeProduct());
         //     observer.complete();
@@ -89,6 +90,7 @@ export class ProductService {
     initializeProduct(): IProduct {
         // Return an initialized object
         return {
+            // business rules for this product define that a new item has starting id of 0
             id: 0,
             productName: null,
             productCode: null,
